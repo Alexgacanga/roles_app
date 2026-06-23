@@ -41,7 +41,7 @@ class HandleInertiaRequests extends Middleware
             'name' => config('app.name'),
             'auth' => [
                 'user' => $request->user(),
-                // NEW: Share the evaluated policy permissions with React
+                //Share the evaluated policy permissions with React
                 'permissions' => [
                     'update_task' => $request->user() ? $request->user()->can('update', Task::class) : false,
                     'delete_task' => $request->user() ? $request->user()->can('delete', Task::class) : false,
