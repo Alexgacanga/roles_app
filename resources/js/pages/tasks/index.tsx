@@ -25,6 +25,10 @@ interface Task {
     status: TaskStatus;
     priority: TaskPriority;
     due_date: string | null;
+    user: {
+        id: number;
+        name: string;
+    } | null;
 }
 
 interface PaginationLink {
@@ -199,6 +203,7 @@ export default function TaskDashboard({ tasks, filters, auth }: PageProps) {
                     <thead className="border-b border-gray-200 bg-gray-50/50 font-medium text-gray-500">
                         <tr>
                             <th className="px-4 py-3">Task Name</th>
+                            <th className="px-4 py-3">User</th>
                             <th className="px-4 py-3">Status</th>
                             <th className="px-4 py-3">Priority</th>
                             <th className="px-4 py-3">Due Date</th>
@@ -217,6 +222,18 @@ export default function TaskDashboard({ tasks, filters, auth }: PageProps) {
                             >
                                 <td className="px-4 py-2.5 font-medium text-gray-900">
                                     {task.title}
+                                </td>
+                                <td className="px-4 py-2.5 text-gray-700">
+                                    {task.user ? (
+                                        <Link
+                                            href={`/users/${task.user.id}`}
+                                            className="font-medium text-slate-900 hover:text-black"
+                                        >
+                                            {task.user.name}
+                                        </Link>
+                                    ) : (
+                                        'Unknown'
+                                    )}
                                 </td>
                                 <td className="px-4 py-2.5">
                                     <span

@@ -7,9 +7,11 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * @property int $id
@@ -42,5 +44,30 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class);
+    }
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class, 'user_role');
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->roles()->where('is_super_admin', true)->exists();
+    }
+
+    public function hasPermission(string $permission): bool
+    {
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
+
+        return $this->roles()
+            ->whereHas('permissions', fn($q) => $q->where('name', $permission))
+            ->exists();
     }
 }

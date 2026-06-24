@@ -11,7 +11,7 @@ class TaskController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Task::query();
+        $query = Task::with('user');
 
         if ($request->filled('search')) {
             $query->where('title', 'like', '%' . $request->search . '%');
@@ -37,7 +37,10 @@ class TaskController extends Controller
             'due_date' => ['nullable', 'date'],
         ]);
 
-        Task::create($validated);
+        Task::create([
+            ...$validated,
+            'user_id' => $request->user()->id,
+        ]);
 
         return redirect()->back();
     }

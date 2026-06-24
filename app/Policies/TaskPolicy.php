@@ -7,19 +7,18 @@ use App\Models\User;
 
 class TaskPolicy
 {
-    // Both Admins and Users can create tasks
     public function create(User $user): bool
     {
-        return in_array($user->role, ['admin', 'user']);
+        return $user->hasPermission('create_task');
     }
 
     public function update(User $user, Task $task = null): bool
     {
-        return $user->role === 'admin';
+        return $user->hasPermission('edit_task');
     }
 
     public function delete(User $user, Task $task = null): bool
     {
-        return $user->role === 'admin';
+        return $user->hasPermission('delete_task');
     }
 }

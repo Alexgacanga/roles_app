@@ -17,21 +17,24 @@ import { dashboard } from '@/routes';
 import type { NavItem } from '@/types';
 
 const mainNavItems: NavItem[] = [
-      {
+    {
         title: 'Tasks',
         href: '/tasks',
         icon: LayoutGrid,
     },
     {
         title: 'Roles',
-        href: dashboard(),
+        href: '/roles',
+        icon: LayoutGrid,
+    },
+    {
+        title: 'Dashboard',
+        href: '/dashboard',
         icon: LayoutGrid,
     },
 ];
 
-const footerNavItems: NavItem[] = [
-
-];
+const footerNavItems: NavItem[] = [];
 
 export function AppSidebar() {
     return (

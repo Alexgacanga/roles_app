@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Role;
+use App\Models\Task;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -14,8 +16,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        // Ensure only Admins can access user management
-        Gate::authorize('manage-users');
+        Gate::authorize('users.view');
 
         return Inertia::render('Users/Index', [
             'users' => User::latest()->paginate(10),
@@ -27,11 +28,10 @@ class UserController extends Controller
      */
     public function updateRole(Request $request, User $user)
     {
-        // Ensure only Admins can modify roles
-        Gate::authorize('manage-users');
+        Gate::authorize('assign_role');
 
         $validated = $request->validate([
-            'role' => ['required', 'in:admin,user,manager,editor,viewer'],
+            'role' => ['required', 'in:admin,user'],
         ]);
 
         // Prevent an admin from demoting their own admin status
@@ -42,9 +42,24 @@ class UserController extends Controller
         }
 
         $user->update([
-            'role' => $validated['role']
+            'role' => $validated['role'],
         ]);
 
+        $role = Role::where('name', $validated['role'])->first();
+
+        if ($role) {
+            $user->roles()->sync([$role->id]);
+        }
+
         return back()->with('success', 'User role updated successfully.');
+    }
+
+    public function show(User $user)
+    {
+        $user->load(['tasks' => fn($query) => $query->latest()]);
+
+        return Inertia::render('users/Show', [
+            'user' => $user,
+        ]);
     }
 }
